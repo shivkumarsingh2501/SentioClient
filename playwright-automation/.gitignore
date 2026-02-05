@@ -1,0 +1,36 @@
+# Node
+node_modules/
+
+# Environment
+.env
+
+# Playwright
+.playwright/
+playwright-report/
+traces/
+reports/
+
+# Test outputs
+test-results/
+coverage/
+
+# IDEs
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+
+# Build
+dist/
+
+# Logs
+npm-debug.log
+
+# Lock files
+package-lock.json
+yarn.lock
+
+# Misc
+*.local
+*.log
