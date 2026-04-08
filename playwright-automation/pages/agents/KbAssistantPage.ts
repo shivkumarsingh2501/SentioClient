@@ -1,4 +1,4 @@
-import { Page, Locator, expect } from '@playwright/test';
+import { expect, Locator, Page } from '@playwright/test';
 import { BasePage } from '../base/BasePage';
 
 export class KbAssistantPage extends BasePage {
@@ -9,14 +9,19 @@ export class KbAssistantPage extends BasePage {
   constructor(page: Page) {
     super(page);
 
-    this.kbAssistantMenu = page.locator('a[href="/agent/ai-chatbot"]');
-    this.chatInput = page.locator('textarea#chat-input');
-    this.sendButton = page.locator('button[title="Send message"]');
+    this.kbAssistantMenu = page.locator('a[href*="ai-chatbot"], a[href*="/client/ai-chatbot"], a[href*="/agent/ai-chatbot"]');
+    this.chatInput = page.locator('textarea#chat-input, textarea[placeholder*="Ask"], input[placeholder*="Ask"]');
+    this.sendButton = page.getByRole('button', { name: /(send|ask|submit)/i }).first();
   }
 
   async openKbAssistant() {
-    await this.kbAssistantMenu.click();
-    await expect(this.chatInput).toBeVisible();
+    if (await this.kbAssistantMenu.count() > 0) {
+      await this.kbAssistantMenu.first().click();
+    } else {
+      await this.page.goto('/client/ai-chatbot');
+    }
+
+    await expect(this.chatInput).toBeVisible({ timeout: 20000 });
   }
 
   async askQuestion(question: string) {

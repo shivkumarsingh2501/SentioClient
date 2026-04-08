@@ -1,17 +1,28 @@
-import { Page } from '@playwright/test';
+import { Locator, Page } from '@playwright/test';
+import { safeClick, safeFill } from '../../utils/commonActions';
 
 export class KbAssistantPage {
-  constructor(private page: Page) {}
+  readonly assistantLauncher: Locator;
+  readonly messageInput: Locator;
+  readonly sendButton: Locator;
+
+  constructor(private page: Page) {
+    this.assistantLauncher = page.locator('text=KB Assistant').first();
+    this.messageInput = page.locator('textarea, input[placeholder*="Ask"], input[placeholder*="question"]');
+    this.sendButton = page.getByRole('button', { name: /(send|ask|submit)/i }).first();
+  }
 
   async openKbAssistant() {
-    // Add implementation to open KB Assistant
-    // Example: await this.page.click('text=KB Assistant');
+    await safeClick(this.assistantLauncher);
+    await this.page.waitForLoadState('networkidle');
   }
 
   async askQuestion(question: string) {
-    // Add implementation to ask a question
-    // Example: 
-    // await this.page.fill('input[placeholder="Ask a question"]', question);
-    // await this.page.press('input[placeholder="Ask a question"]', 'Enter');
+    await safeFill(this.messageInput, question);
+    await safeClick(this.sendButton);
+  }
+
+  async waitForAnswerContaining(text: string) {
+    await this.page.locator(`text=${text}`).waitFor({ state: 'visible', timeout: 20000 });
   }
 }
